@@ -1,24 +1,32 @@
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Account {
     private String username;
-    // TODO: Passwords should hashed
     private String password;
-    private UUID accountID;
+    private UUID accountID; //todo: whats is this? :(
 
-    @Override
+
+    //@Override
     public boolean validatePassword(String enteredPassword) {
-        //TODO
-        return false;
+        Pattern pattern = Pattern.compile(password);
+        Matcher matcher = pattern.matcher(enteredPassword);
+        return matcher.find();
     }
 
-    @Override
+    //@Override
     public void changeUsername(String newUsername) {
-        //TODO
+        username = newUsername;
+    }
+
+    //@Override
+    public void changePassword(String newPassword) {
+        password = newPassword;
     }
 
     @Override
-    public void changePassword(String newPassword) {
-        //TODO
+    public String toString() {
+        return super.toString();
     }
 }
