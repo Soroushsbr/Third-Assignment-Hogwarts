@@ -11,16 +11,23 @@ public class Assistant extends Hogwarts{
 
     public void showRequestTeacher(){
         int i = 1;
+        System.out.println("----- Teacher Requests -----");
         for(String teacher : requestsTeacher){
-            System.out.println(i + ". " + teacher);
+            String[] parts = teacher.split(String.valueOf(";"));
+            System.out.print(i + ".  ");
+            for(int j = 0 ; j < parts.length - 1; j++){
+                System.out.print(parts[j] + "   ");
+            }
+            System.out.println();
             i++;
         }
     }
 
     public void showRequestStudent(){
         int i = 1;
+        System.out.println("----- Student Requests -----");
         for(String student : requestsStudent){
-            System.out.println(i + ". " + student);
+            System.out.println(i + ". " + student.replace(";" , "    "));
             i++;
         }
     }
@@ -98,15 +105,11 @@ public class Assistant extends Hogwarts{
         return studentsList;
     }
     public boolean validatePassword(String enteredPassword) {
-        Pattern pattern = Pattern.compile(password);
-        Matcher matcher = pattern.matcher(enteredPassword);
-        return matcher.find();
+        return enteredPassword.equals(password);
     }
 
     public boolean validateUsername(String enteredUsername) {
-        Pattern pattern = Pattern.compile(username);
-        Matcher matcher = pattern.matcher(enteredUsername);
-        return matcher.find();
+        return enteredUsername.equals(username);
     }
 
     @Override

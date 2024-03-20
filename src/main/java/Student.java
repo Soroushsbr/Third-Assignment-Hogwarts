@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -7,6 +8,8 @@ public class Student extends Account{
     private String password;
     private ArrayList<String> courses = new ArrayList<>();
     private String house;
+    private UUID accountID;
+    int gradeCnt;
     double grade;
     public Student(String username , String password, String house , double grade){
         this.username = username;
@@ -14,16 +17,27 @@ public class Student extends Account{
         this.house = house;
         this.grade = grade;
     }
+
+    public int getGradeCnt() {
+        return gradeCnt;
+    }
+
+    public void setGradeCnt(int gradeCnt) {
+        this.gradeCnt = gradeCnt;
+    }
+
     @Override
     public boolean validatePassword(String enteredPassword) {
-        Pattern pattern = Pattern.compile(password);
-        Matcher matcher = pattern.matcher(enteredPassword);
-        return matcher.find();
+        return enteredPassword.equals(password);
     }
 
     @Override
     public void changeUsername(String newUsername) {
         this.username = newUsername;
+    }
+
+    public void setCourses(ArrayList<String> courses) {
+        this.courses = courses;
     }
 
     @Override
@@ -43,7 +57,12 @@ public class Student extends Account{
     }
 
     @Override
+    public void uuidMaker() {
+        super.uuidMaker();
+    }
+
+    @Override
     public String toString() {
-        return ( this.username + ";" + this.house + ";" + this.grade + ";" + this.courses + ";" + this.password);
+        return ( this.username + ";" + this.house + ";" + this.grade + ";" + this.courses + ";" + this.password + ";" + this.gradeCnt);
     }
 }

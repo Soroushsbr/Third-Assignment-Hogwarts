@@ -1,3 +1,4 @@
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -6,6 +7,7 @@ public class Teacher extends Account{
     private String password;
     private double score;
     private String course = "";
+    private UUID accountID;
 
     private int vote = 0;
     public Teacher(String username , String password , double score, String course){
@@ -25,9 +27,7 @@ public class Teacher extends Account{
 
     @Override
     public boolean validatePassword(String enteredPassword) {
-        Pattern pattern = Pattern.compile(password);
-        Matcher matcher = pattern.matcher(enteredPassword);
-        return matcher.find();
+        return enteredPassword.equals(password);
     }
 
     @Override
@@ -39,6 +39,15 @@ public class Teacher extends Account{
         System.out.println("|-------- " + username +" --------|");
         System.out.println("Score: " + score); //todo
         System.out.println("Taken Course: " + course); //todo
+    }
+
+    public String getCourse() {
+        return course;
+    }
+
+    @Override
+    public void uuidMaker() {
+        super.uuidMaker();
     }
 
     @Override

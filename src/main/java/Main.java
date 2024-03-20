@@ -8,7 +8,6 @@ public class Main {
     public static Assistant assistant = new Assistant();
 
     public static void main(String[] args) {
-        // TODO: Program starts from here
         hogwarts.defaultCourses();
         assistant.defaultCourses();
         runMenu();
@@ -76,6 +75,23 @@ public class Main {
         switch (in.next()) {
             case "1":
                 hogwarts.viewAllTeachers();
+                System.out.println("------------\n1.Vote\n2.Exit");
+                switch (in.next()){
+                    case "1":
+                        System.out.println("----- Choose one -----");
+                        int index = in.nextInt();
+                        System.out.print("Score: ");
+                        double score = in.nextDouble();
+                        voteTeacher(score , index);
+                        hogwarts.teachersList.remove(index - 1);
+                        assistant.teachersList.remove(index - 1);
+                        break;
+                    case "2":
+                        hogwartsMenu();
+                        break;
+                    default:
+                        break;
+                }
                 break;
             case "2":
                 hogwarts.viewAllStudents();
@@ -93,6 +109,18 @@ public class Main {
         hogwartsMenu();
     }
 
+    public static void voteTeacher(double enteredScore, int index){
+        String teacher = hogwarts.teachersList.get(index - 1);
+        String[] parts = teacher.split(String.valueOf(";"));
+        int vote = Integer.parseInt(parts[3]);
+        double score = Double.parseDouble(parts[2]);
+        score = (score * vote) / (vote + 1) + enteredScore/(vote + 1);
+        Teacher newTeahcer = new Teacher(parts[0] , parts[4] , score , parts[1]);
+        newTeahcer.setVote(vote + 1);
+        hogwarts.teacherAppend(newTeahcer.toString());
+        assistant.teacherAppend(newTeahcer.toString());
+    }
+
     public static void assistantMenu() {
         Scanner in = new Scanner(System.in);
         System.out.print("Username: ");
@@ -102,7 +130,7 @@ public class Main {
         if (assistant.validatePassword(password) && assistant.validateUsername(username)) {
             assistantMenuLog();
         } else {
-            System.out.println("Error: Wrong username or password.");
+            System.out.println("Wrong username or password.");
         }
         runMenu();
         //todo: make his powers
@@ -199,11 +227,17 @@ public class Main {
             Teacher teacher = teacherFinder(username);
             System.out.println("Password: ");
             String password = hasedPassword(in.next());
-            if(teacher.validatePassword(password)) {
-                teacherMenuLog(teacher, username);
+            if(teacher != null) {
+                if (teacher.validatePassword(password)) {
+                    teacherMenuLog(teacher, username);
+                } else {
+                    System.out.println("Wrong Password");
+                    teacherMenu();
+                }
             }
             else{
-                System.out.println("Wrong Password");
+                System.out.println("Username not found");
+                teacherMenu();
             }
         } else if (opt.equals("2")) {
             System.out.print("Username: ");
@@ -225,15 +259,20 @@ public class Main {
             System.out.println("Invalid input.");
             teacherMenu();
         }
-
+        teacherMenu();
     }
 
     public static void teacherMenuLog(Teacher teacher , String username){
         Scanner in = new Scanner(System.in);
         teacher.showProfile();
-        System.out.println("----------------------\n1.Change Username\n2.Change Password\n3.Exit");
+        System.out.println("----------------------\n1.Set Grades\n2.Change Username\n3.Change Password\n4.Exit");
         switch (in.next()) {
             case "1":
+                //todo
+                String course = teacher.getCourse();
+                gradeSetter(course);
+                break;
+            case "2":
                 teacherReplace(username);
                 System.out.println("New Username: ");
                 teacher.changeUsername(in.next());
@@ -241,7 +280,7 @@ public class Main {
                 assistant.teachersList.add(teacher.toString());
                 teacherMenuLog(teacher , username);
                 break;
-            case "2":
+            case "3":
                 teacherReplace(username);
                 System.out.println("New Password: ");
                 teacher.changePassword(in.next());
@@ -249,13 +288,63 @@ public class Main {
                 assistant.teachersList.add(teacher.toString());
                 teacherMenuLog(teacher , username);
                 break;
-            case "3":
+            case "4":
                 runMenu();
                 break;
             default:
                 teacherMenuLog(teacher , username);
                 break;
 
+        }
+        teacherMenuLog(teacher , username);
+    }
+
+    public static void gradeSetter(String course){
+        Scanner in = new Scanner(System.in);
+        int i = 1;
+        for(String student : hogwarts.studentsList){
+            String[] parts = student.split(String.valueOf(";"));
+            Pattern pattern = Pattern.compile("\\w*" + course + "\\w*");
+            Matcher matcher = pattern.matcher(parts[3]);
+            if (matcher.find()){
+                System.out.print(i + ".  ");
+                for(int j = 0 ; j < parts.length - 2; j++){
+                    System.out.print(parts[j] + "   ");
+                }
+                System.out.println();
+            }
+            i++;
+        }
+        System.out.println("------ Select one ------\n(0)Exit");
+        int index = in.nextInt();
+        if(index != 0) {
+            String selectedStudent = hogwarts.studentsList.get(index - 1);
+            String[] list = selectedStudent.split(String.valueOf(";"));
+            for(int j = 0 ; j < 4 ;j++){
+                System.out.print(list[j] + "   ");
+            }
+            System.out.println("\n------ Set a Grade ------");
+            double enteredGrade = in.nextDouble();
+            int gradeCnt = Integer.parseInt(list[5]);
+            double grade = Double.parseDouble(list[2]);
+            grade = (grade * gradeCnt) / (gradeCnt + 1) + enteredGrade / (gradeCnt + 1);
+            Student newStudent = new Student(list[0], list[4], list[1], grade);
+            newStudent.setGradeCnt(gradeCnt + 1);
+            String listCourse = list[3].substring(1 , list[3].length() - 1);
+            String[] listObj = listCourse.split(String.valueOf(","));
+            ArrayList<String> courses = newStudent.getCourses();
+            for (int k = 0; k < listObj.length; k++) {
+                if (k != 0) {
+                    courses.add(listObj[k].substring(1));
+                } else {
+                    courses.add(listObj[k]);
+                }
+            }
+            newStudent.setCourses(courses);
+            hogwarts.studentsAppend(newStudent.toString());
+            assistant.studentsAppend(newStudent.toString());
+            hogwarts.studentsList.remove(index - 1);
+            assistant.studentsList.remove(index - 1);
         }
     }
 
@@ -270,11 +359,16 @@ public class Main {
             Student student = studentFinder(username);
             System.out.println("Password: ");
             String password = hasedPassword(in.next());
-            if(student.validatePassword(password)) {
-                studentMenuLog(student, username);
-            }
-            else{
-                System.out.println("Wrong Password");
+            if(student != null) {
+                if (student.validatePassword(password)) {
+                    studentMenuLog(student, username);
+                } else {
+                    System.out.println("Wrong Password");
+                    studentMenu();
+                }
+            }else{
+                System.out.println("Username not found");
+                studentMenu();
             }
         } else if (opt.equals("2")) {
             System.out.print("Username: ");
@@ -293,6 +387,7 @@ public class Main {
             System.out.println("Error: Invalid input.");
             studentMenu();
         }
+        studentMenu();
     }
 
     public static void studentMenuLog(Student student, String username){
@@ -317,7 +412,6 @@ public class Main {
                 studentMenuLog(student,username);
                 break;
             case "3":
-                studentReplace(username); //fix
                 adjustCourses(student);
                 studentMenuLog(student,username);
                 break;
@@ -325,7 +419,7 @@ public class Main {
                 runMenu();
                 break;
         }
-
+        studentMenuLog(student,username);
     }
 
     public static void adjustCourses(Student student) {
@@ -335,9 +429,19 @@ public class Main {
         hogwarts.viewAllCourses();
         int index = in.nextInt();
         ArrayList<String> courses = student.getCourses();
-        courses.add(hogwarts.coursesList.get(index - 1));
-        hogwarts.studentsAppend(student.toString());
-        assistant.studentsAppend(student.toString());
+        String list = student.toString();
+        String[] parts = list.split(String.valueOf(";"));
+        Pattern pattern = Pattern.compile("\\w*" + hogwarts.coursesList.get(index - 1) + "\\w*");
+        Matcher matcher = pattern.matcher(parts[3]);
+        if(!matcher.find()) {
+            courses.add(hogwarts.coursesList.get(index - 1));
+            studentReplace(parts[0]);
+            hogwarts.studentsAppend(student.toString());
+            assistant.studentsAppend(student.toString());
+        }
+        else{
+            System.out.println("-----The Course is already taken-----");
+        }
     }
 
     public static void studentReplace(String username) {
@@ -376,11 +480,9 @@ public class Main {
                 String[] parts = name.split(String.valueOf(";"));
                 String course = parts[1];
                 double score = Double.parseDouble(parts[2]);
-                String password = parts[3];
+                String password = parts[4];
                 Teacher teacher = new Teacher(username, password, score, course);
                 return teacher;
-            } else {
-                System.out.println("Username not found");
             }
         }
         return null;
@@ -394,22 +496,22 @@ public class Main {
                 String house = parts[1];
                 double grade = Double.parseDouble(parts[2]);
                 String password = parts[4];
-                Student student = new Student(username , password, house , grade);
-                if(!parts[3].equals("[]")){
-                    String list = parts[3].substring(1 , parts.length - 1);
+                Student student = new Student(username, password, house, grade);
+                if (!(parts[3].equals("[]"))) {
+                    String list = parts[3].substring(1, parts[3].length() - 1);
                     String[] listObj = list.split(String.valueOf(","));
                     ArrayList<String> courses = student.getCourses();
-                    for (int i = 0; i < parts.length; i++) {
-                        if (listObj[i].charAt(0) == ' ') {
+                    for (int i = 0; i < listObj.length; i++) {
+                        if (i != 0) {
                             courses.add(listObj[i].substring(1));
                         } else {
                             courses.add(listObj[i]);
                         }
                     }
+                    student.setCourses(courses);
                 }
+
                 return student;
-            } else {
-                System.out.println("Username not found"); //todo: fix the bug
             }
         }
         return null;

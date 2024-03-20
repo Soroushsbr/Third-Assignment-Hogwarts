@@ -5,7 +5,7 @@ import java.util.regex.Pattern;
 public class Account {
     private String username;
     private String password;
-    private UUID accountID; //todo: whats is this? :(
+    private UUID accountID;
 
 
     //@Override
@@ -13,6 +13,10 @@ public class Account {
         Pattern pattern = Pattern.compile(password);
         Matcher matcher = pattern.matcher(enteredPassword);
         return matcher.find();
+    }
+
+    public void uuidMaker(){
+        accountID = UUID.randomUUID();
     }
 
     //@Override

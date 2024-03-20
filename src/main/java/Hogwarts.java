@@ -10,11 +10,11 @@ public class Hogwarts {
 
     // TODO: Define Functionalities
     public void viewAllTeachers() {
-        System.out.println("    NAME   COURSE   SCORE\n");
+        System.out.println("    NAME    COURSE    SCORE    VOTES\n");
         int i = 1;
         for(String teacher : teachersList){
             String[] parts = teacher.split(String.valueOf(";"));
-            System.out.print(i + ". ");
+            System.out.print(i + ".  ");
             for(int j = 0 ; j < parts.length - 1; j++){
                 System.out.print(parts[j] + "   ");
             }
@@ -22,6 +22,8 @@ public class Hogwarts {
             i++;
         }
     }
+
+
 
     public void teacherAppend(String enteredTeacher){
         teachersList.add(enteredTeacher);
@@ -32,8 +34,8 @@ public class Hogwarts {
         int i = 1;
         for(String student : studentsList){
             String[] parts = student.split(String.valueOf(";"));
-            System.out.print(i + ". ");
-            for(int j = 0 ; j < parts.length - 1; j++){
+            System.out.print(i + ".  ");
+            for(int j = 0 ; j < parts.length - 2; j++){
                 System.out.print(parts[j] + "   ");
             }
             System.out.println();
